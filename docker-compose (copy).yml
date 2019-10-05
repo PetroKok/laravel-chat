@@ -1,0 +1,39 @@
+web:
+ image: nginx:latest
+ ports:
+  - "80:80"
+ volumes:
+  - ./public:/public
+  - ./doc_site.conf:/etc/nginx/conf.d/doc_site.conf
+ links:
+  - app
+
+
+app:
+ build: .
+ dockerfile: Dockerfile
+ volumes:
+  - ./public:/public
+ container_name: app
+ restart: unless-stopped
+ tty: true
+ environment:
+  SERVICE_NAME: app
+  SERVICE_TAGS: dev
+ working_dir: /var/www/doc_site.loc
+
+
+db:
+ image: mysql:5.7
+ command: --default-authentication-plugin=mysql_native_password
+ restart: always
+ environment:
+  MYSQL_DATABASE: 'db'
+  MYSQL_PASSWORD: 123
+  MYSQL_ROOT_PASSWORD: 123
+  MYSQL_DATABASE: doc_site
+  MYSQL_USER: root
+ ports:
+  - '3306:3306'
+ volumes:
+  - my-db:/var/lib/mysql
